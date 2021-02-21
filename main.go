@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -13,13 +14,26 @@ func main() {
 	var s string
 	fmt.Print("Введіть назву теки: ")
 	_, err := fmt.Scanln(&s)
+	fileArr := getArrOfFiles(s)
 	if err != nil {
 		log.Fatal(err)
 	}
-	lines := readLinesFromCSV(s)
-	for i := range lines {
-		fmt.Println(lines[i])
+	readLinesFromCSV(s)
+	for i := range fileArr {
+		fmt.Println(fileArr[i])
 	}
+}
+
+func getArrOfFiles(path string) []string {
+	var fileArr []string
+	err := filepath.Walk("./"+path, func(path string, info os.FileInfo, err error) error {
+		fileArr = append(fileArr, path)
+		return nil
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return fileArr
 }
 
 func readLinesFromCSV(s string) [][]string {
