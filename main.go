@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -16,9 +17,75 @@ func main() {
 	fmt.Print("Введіть назву теки: ")
 	_, err := fmt.Scanln(&path)
 	fullInfo := takeAllFromFiles(path, err)
+	fullInfo = setAllMarks(fullInfo)
+	addSum(fullInfo)
+	sortFullInfo(fullInfo)
 	for i := range fullInfo {
 		fmt.Println(fullInfo[i])
 	}
+}
+func sortFullInfo(fullInfo [][]string) {
+	var marks []int
+	var lastIndex = len(fullInfo[0]) - 1
+	for i := range fullInfo {
+		data, _ := strconv.Atoi(fullInfo[i][lastIndex])
+		marks = append(marks, data)
+	}
+	for i := 0; i < len(marks)-1; i++ {
+		for j := 0; j < len(marks)-1-i; j++ {
+			if marks[j] < marks[j+1] {
+				marks[j], marks[j+1] = marks[j+1], marks[j]
+				fullInfo[j], fullInfo[j+1] = fullInfo[j+1], fullInfo[j]
+			}
+		}
+	}
+
+}
+func addSum(fullInfo [][]string) {
+	for i := range fullInfo {
+		var sum = 0
+		for j := 1; j < len(fullInfo[i]); j++ {
+			s, _ := strconv.Atoi(fullInfo[i][j])
+			sum += s
+		}
+		fullInfo[i] = append(fullInfo[i], strconv.Itoa(sum))
+	}
+}
+
+func setAllMarks(fullInfo [][]string) [][]string {
+	for i := 1; i <= len(fullInfo); i++ {
+		fullInfo = setMarks(fullInfo, i)
+	}
+	return fullInfo
+}
+
+func setMarks(fullInfo [][]string, col int) [][]string {
+	marks := make([]int, len(fullInfo), len(fullInfo))
+	for i := range fullInfo {
+		marks[i], _ = strconv.Atoi(fullInfo[i][col])
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(marks)))
+	for i := range fullInfo {
+		val, _ := strconv.Atoi(fullInfo[i][col])
+		if val < marks[9] {
+			fullInfo[i][col] = "0"
+		} else {
+			if val >= marks[9] && val < marks[1] {
+				for j := 2; j < 10; j++ {
+					if marks[j] == val {
+						fullInfo[i][col] = strconv.Itoa(10 - j)
+					}
+				}
+			} else {
+				if marks[1] == val {
+					fullInfo[i][col] = "10"
+				} else {
+					fullInfo[i][col] = "12"
+				}
+			}
+		}
+	}
+	return fullInfo
 }
 
 func takeAllFromFiles(path string, err error) [][]string {
