@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	readLinesFromCSV(s)
+	readLinesFromCSV(s, "eurovision1.csv")
 	for i := range fileArr {
 		fmt.Println(fileArr[i])
 	}
@@ -27,6 +28,11 @@ func main() {
 func getArrOfFiles(path string) []string {
 	var fileArr []string
 	err := filepath.Walk("./"+path, func(path string, info os.FileInfo, err error) error {
+		for i := utf8.RuneCountInString(path) - 1; i >= 0; i-- {
+			if path[i] == 92 {
+				path = path[i+1:]
+			}
+		}
 		fileArr = append(fileArr, path)
 		return nil
 	})
@@ -36,8 +42,8 @@ func getArrOfFiles(path string) []string {
 	return fileArr
 }
 
-func readLinesFromCSV(s string) [][]string {
-	file, err := os.Open("./" + s + "/eurovision1.csv")
+func readLinesFromCSV(path, filename string) [][]string {
+	file, err := os.Open("./" + path + "/" + filename)
 	if err != nil {
 		log.Fatal(err)
 	}
