@@ -15,21 +15,30 @@ func main() {
 	var path string
 	fmt.Print("Введіть назву теки: ")
 	_, err := fmt.Scanln(&path)
+	fullInfo := takeAllFromFiles(path, err)
+	for i := range fullInfo {
+		fmt.Println(fullInfo[i])
+	}
+}
+
+func takeAllFromFiles(path string, err error) [][]string {
 	fileArr := getArrOfFiles(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 	var fullInfo [][]string
 	for _, v := range fileArr {
-		linesFromCSV := readLinesFromCSV(path, v)
-		temp := make([][]string, len(fullInfo)+len(linesFromCSV), len(fullInfo)+len(linesFromCSV))
-		copy(temp, fullInfo)
-		copy(temp[len(fullInfo):], linesFromCSV)
-		fullInfo = temp
+		appendLines(path, v, &fullInfo)
 	}
-	for i := range fullInfo {
-		fmt.Println(fullInfo[i])
-	}
+	return fullInfo
+}
+
+func appendLines(path string, v string, fullInfo *[][]string) {
+	linesFromCSV := readLinesFromCSV(path, v)
+	temp := make([][]string, len(*fullInfo)+len(linesFromCSV), len(*fullInfo)+len(linesFromCSV))
+	copy(temp, *fullInfo)
+	copy(temp[len(*fullInfo):], linesFromCSV)
+	*fullInfo = temp
 }
 
 func getArrOfFiles(p string) []string {
