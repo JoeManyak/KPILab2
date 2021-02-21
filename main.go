@@ -10,6 +10,13 @@ import (
 )
 
 func main() {
+	lines := readLinesFromCSV()
+	for i := range lines {
+		fmt.Println(lines[i])
+	}
+}
+
+func readLinesFromCSV() [][]string {
 	file, err := os.Open("./data/eurovision1.csv")
 	if err != nil {
 		log.Fatal(err)
@@ -22,7 +29,5 @@ func main() {
 	for i := 0; scanner.Scan(); i++ {
 		lines[i] = strings.Split(scanner.Text(), ",")
 	}
-	for i := range lines {
-		fmt.Println(lines[i])
-	}
+	return lines
 }
