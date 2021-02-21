@@ -10,14 +10,20 @@ import (
 )
 
 func main() {
-	lines := readLinesFromCSV()
+	var s string
+	fmt.Print("Введіть назву теки: ")
+	_, err := fmt.Scanln(&s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	lines := readLinesFromCSV(s)
 	for i := range lines {
 		fmt.Println(lines[i])
 	}
 }
 
-func readLinesFromCSV() [][]string {
-	file, err := os.Open("./data/eurovision1.csv")
+func readLinesFromCSV(s string) [][]string {
+	file, err := os.Open("./" + s + "/eurovision1.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
