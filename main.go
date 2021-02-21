@@ -12,28 +12,37 @@ import (
 )
 
 func main() {
-	var s string
+	var path string
 	fmt.Print("Введіть назву теки: ")
-	_, err := fmt.Scanln(&s)
-	fileArr := getArrOfFiles(s)
+	_, err := fmt.Scanln(&path)
+	fileArr := getArrOfFiles(path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	readLinesFromCSV(s, "eurovision1.csv")
-	for i := range fileArr {
-		fmt.Println(fileArr[i])
+	var fullInfo [][]string
+	for _, v := range fileArr {
+		linesFromCSV := readLinesFromCSV(path, v)
+		temp := make([][]string, len(fullInfo)+len(linesFromCSV), len(fullInfo)+len(linesFromCSV))
+		copy(temp, fullInfo)
+		copy(temp[len(fullInfo):], linesFromCSV)
+		fullInfo = temp
+	}
+	for i := range fullInfo {
+		fmt.Println(fullInfo[i])
 	}
 }
 
-func getArrOfFiles(path string) []string {
+func getArrOfFiles(p string) []string {
 	var fileArr []string
-	err := filepath.Walk("./"+path, func(path string, info os.FileInfo, err error) error {
-		for i := utf8.RuneCountInString(path) - 1; i >= 0; i-- {
-			if path[i] == 92 {
-				path = path[i+1:]
+	err := filepath.Walk("./"+p, func(path string, info os.FileInfo, err error) error {
+		if path != "./"+p {
+			for i := utf8.RuneCountInString(path) - 1; i >= 0; i-- {
+				if path[i] == 92 {
+					path = path[i+1:]
+				}
 			}
+			fileArr = append(fileArr, path)
 		}
-		fileArr = append(fileArr, path)
 		return nil
 	})
 	if err != nil {
