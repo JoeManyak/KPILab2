@@ -20,10 +20,23 @@ func main() {
 	fullInfo = setAllMarks(fullInfo)
 	addSum(fullInfo)
 	sortFullInfo(fullInfo)
-	for i := range fullInfo {
-		fmt.Println(fullInfo[i])
+	writeToFileResult(fullInfo, 10)
+}
+
+func writeToFileResult(fullInfo [][]string, count int) {
+	f, err := os.Create("result.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	for i := 0; i < count; i++ {
+		if i >= len(fullInfo) {
+			break
+		}
+		f.WriteString(fullInfo[i][0] + "," + fullInfo[i][len(fullInfo[i])-1] + "\n")
 	}
 }
+
 func sortFullInfo(fullInfo [][]string) {
 	var marks []int
 	var lastIndex = len(fullInfo[0]) - 1
