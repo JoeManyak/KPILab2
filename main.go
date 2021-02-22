@@ -16,11 +16,31 @@ func main() {
 	var path string
 	fmt.Print("Введіть назву теки: ")
 	_, err := fmt.Scanln(&path)
+	fmt.Println("Введіть бали для переможців (в порядку спадання):")
+	scan := bufio.NewScanner(os.Stdin)
+	scan.Scan()
+	marks := scan.Text()
+	marksSlice := strings.Split(marks, " ")
 	fullInfo := takeAllFromFiles(path, err)
-	fullInfo = setAllMarks(fullInfo)
+	fullInfo = setAllMarks(fullInfo, marksSlice)
 	addSum(fullInfo)
 	sortFullInfo(fullInfo)
 	writeToFileResult(fullInfo, 10)
+	writeWholeResult(fullInfo)
+}
+
+func writeWholeResult(fullInfo [][]string) {
+	f, err := os.Create("optional_result.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	for i := range fullInfo {
+		for j := 0; j < len(fullInfo[i])-1; j++ {
+			f.WriteString(fullInfo[i][j] + " ")
+		}
+		f.WriteString(fullInfo[i][len(fullInfo[i])-1] + "\n")
+	}
 }
 
 func writeToFileResult(fullInfo [][]string, count int) {
@@ -65,14 +85,14 @@ func addSum(fullInfo [][]string) {
 	}
 }
 
-func setAllMarks(fullInfo [][]string) [][]string {
+func setAllMarks(fullInfo [][]string, marksSlice []string) [][]string {
 	for i := 1; i <= len(fullInfo); i++ {
-		fullInfo = setMarks(fullInfo, i)
+		fullInfo = setMarks(fullInfo, i, marksSlice)
 	}
 	return fullInfo
 }
 
-func setMarks(fullInfo [][]string, col int) [][]string {
+func setMarks(fullInfo [][]string, col int, marksSlice []string) [][]string {
 	marks := make([]int, len(fullInfo), len(fullInfo))
 	for i := range fullInfo {
 		marks[i], _ = strconv.Atoi(fullInfo[i][col])
@@ -80,7 +100,16 @@ func setMarks(fullInfo [][]string, col int) [][]string {
 	sort.Sort(sort.Reverse(sort.IntSlice(marks)))
 	for i := range fullInfo {
 		val, _ := strconv.Atoi(fullInfo[i][col])
-		if val < marks[9] {
+		for j := range marks {
+			if val == marks[j] {
+				if j < len(marksSlice) {
+					fullInfo[i][col] = marksSlice[j]
+				} else {
+					fullInfo[i][col] = "0"
+				}
+			}
+		}
+		/*if val < marks[9] {
 			fullInfo[i][col] = "0"
 		} else {
 			if val >= marks[9] && val < marks[1] {
@@ -96,7 +125,7 @@ func setMarks(fullInfo [][]string, col int) [][]string {
 					fullInfo[i][col] = "12"
 				}
 			}
-		}
+		}*/
 	}
 	return fullInfo
 }
