@@ -16,11 +16,18 @@ func main() {
 	var path string
 	fmt.Print("Введіть назву теки: ")
 	_, err := fmt.Scanln(&path)
-	fmt.Println("Введіть бали для переможців (в порядку спадання):")
-	scan := bufio.NewScanner(os.Stdin)
-	scan.Scan()
-	marks := scan.Text()
-	marksSlice := strings.Split(marks, " ")
+	/*
+		Частина з практики:
+
+		fmt.Println("Введіть бали для переможців (в порядку спадання):")
+		scan := bufio.NewScanner(os.Stdin)
+		scan.Scan()
+		marks := scan.Text()
+		marksSlice := strings.Split(marks, " ")
+
+	*/
+	//Заглушка для виконання умови:
+	marksSlice := []string{"12", "10", "8", "7", "6", "5", "4", "3", "2", "1"}
 	fullInfo := takeAllFromFiles(path, err)
 	fullInfo = setAllMarks(fullInfo, marksSlice)
 	addSum(fullInfo)
@@ -109,23 +116,6 @@ func setMarks(fullInfo [][]string, col int, marksSlice []string) [][]string {
 				}
 			}
 		}
-		/*if val < marks[9] {
-			fullInfo[i][col] = "0"
-		} else {
-			if val >= marks[9] && val < marks[1] {
-				for j := 2; j < 10; j++ {
-					if marks[j] == val {
-						fullInfo[i][col] = strconv.Itoa(10 - j)
-					}
-				}
-			} else {
-				if marks[1] == val {
-					fullInfo[i][col] = "10"
-				} else {
-					fullInfo[i][col] = "12"
-				}
-			}
-		}*/
 	}
 	return fullInfo
 }
